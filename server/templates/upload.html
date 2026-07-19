@@ -1,35 +1,247 @@
 <!DOCTYPE html>
-<html>
+<html lang="he" dir="rtl">
 <head>
     <meta charset="UTF-8">
-    <title>העלאת הקלטה</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>העלאת הקלטה - מערכת מודיעין</title>
+    <style>
+        :root {
+            /* פלטת צבעים שמתאימה למערכת מודיעינית/טכנולוגית */
+            --bg-color: #0f172a;
+            --panel-bg: #1e293b;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --success: #10b981;
+            --error: #ef4444;
+            --border-radius: 10px;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        .upload-card {
+            background-color: var(--panel-bg);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+            width: 100%;
+            max-width: 450px;
+            text-align: center;
+            border-top: 4px solid var(--primary);
+        }
+
+        h1 {
+            margin-top: 0;
+            font-size: 1.75rem;
+            margin-bottom: 0.5rem;
+        }
+
+        p.subtitle {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 2rem;
+        }
+
+        /* עיצוב אזור בחירת הקובץ */
+        .file-drop-area {
+            position: relative;
+            border: 2px dashed #475569;
+            border-radius: var(--border-radius);
+            padding: 2.5rem 1rem;
+            margin-bottom: 1.5rem;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background-color: rgba(15, 23, 42, 0.3);
+        }
+
+        .file-drop-area:hover {
+            border-color: var(--primary);
+            background-color: rgba(59, 130, 246, 0.05);
+        }
+
+        .file-drop-area input[type="file"] {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        .file-icon {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .file-msg {
+            font-size: 1rem;
+            color: var(--text-muted);
+        }
+
+        .file-name-display {
+            display: block;
+            margin-top: 10px;
+            font-weight: bold;
+            color: var(--primary);
+            direction: ltr; /* שומר על אנגלית ומספרים ישרים */
+        }
+
+        /* עיצוב הכפתור */
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 14px 24px;
+            font-size: 1.1rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            width: 100%;
+            transition: background-color 0.3s ease, transform 0.1s;
+            font-weight: 600;
+        }
+
+        button:hover {
+            background-color: var(--primary-hover);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        button:disabled {
+            background-color: #475569;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* הודעות תוצאה */
+        #result {
+            margin-top: 1.5rem;
+            padding: 12px;
+            border-radius: 6px;
+            display: none;
+            font-weight: 500;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .success-msg {
+            background-color: rgba(16, 185, 129, 0.15);
+            border: 1px solid var(--success);
+            color: #34d399;
+            display: block !important;
+        }
+
+        .error-msg {
+            background-color: rgba(239, 68, 68, 0.15);
+            border: 1px solid var(--error);
+            color: #f87171;
+            display: block !important;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
 </head>
 <body>
-    <h1>העלאת הקלטה</h1>
-    <form id="upload-form">
-        <input type="file" id="audio-file" name="audio_file" accept=".wav,.mp3" required>
-        <button type="submit">העלה</button>
-    </form>
-    <p id="result"></p>
+    <div class="upload-card">
+        <h1>העלאת הקלטה</h1>
+        <p class="subtitle">מערכת זיהוי קול מודיעיני (תומך ב-WAV/MP3)</p>
+
+        <form id="upload-form">
+            <div class="file-drop-area" id="drop-area">
+                <span class="file-icon">📁</span>
+                <span class="file-msg" id="default-msg">לחץ כאן או גרור קובץ שמע</span>
+                <span class="file-name-display" id="file-name"></span>
+                <input type="file" id="audio-file" name="audio_file" accept=".wav,.mp3" required>
+            </div>
+
+            <button type="submit" id="submit-btn">העלה קובץ לשרת</button>
+        </form>
+
+        <div id="result"></div>
+    </div>
 
     <script>
+        const fileInput = document.getElementById("audio-file");
+        const fileNameDisplay = document.getElementById("file-name");
+        const defaultMsg = document.getElementById("default-msg");
+        const submitBtn = document.getElementById("submit-btn");
+        const resultEl = document.getElementById("result");
+
+        // הצגת שם הקובץ הנבחר למשתמש בצורה יפה
+        fileInput.addEventListener("change", function() {
+            if (this.files && this.files.length > 0) {
+                fileNameDisplay.textContent = this.files[0].name;
+                defaultMsg.style.display = 'none';
+            } else {
+                fileNameDisplay.textContent = "";
+                defaultMsg.style.display = 'block';
+            }
+        });
+
+        // טיפול בשליחת הטופס לשרת
         document.getElementById("upload-form").addEventListener("submit", async function (e) {
-            e.preventDefault();
-            const fileInput = document.getElementById("audio-file");
+            e.preventDefault(); // מניעת רענון של הדף
+
+            if (!fileInput.files.length) return;
+
+            // 1. שינוי מצב כפתור (Loading state) כדי שהסוכן ידע שהמערכת עובדת
+            submitBtn.disabled = true;
+            submitBtn.textContent = "מעבד קובץ... אנא המתן";
+            resultEl.className = "";
+            resultEl.style.display = "none";
+
             const formData = new FormData();
             formData.append("audio_file", fileInput.files[0]);
 
-            const response = await fetch("/upload", {
-                method: "POST",
-                body: formData
-            });
-            const data = await response.json();
+            try {
+                // 2. שליחה לשרת לפי חוזה ה-API
+                const response = await fetch("/upload", {
+                    method: "POST",
+                    body: formData
+                });
 
-            const resultEl = document.getElementById("result");
-            if (data.success) {
-                resultEl.textContent = "הקובץ הועלה בהצלחה: " + data.file_id;
-            } else {
-                resultEl.textContent = "שגיאה: " + data.error;
+                const data = await response.json();
+
+                // 3. הצגת הודעת הצלחה/שגיאה בהתאם לתשובה מהשרת
+                if (data.success) {
+                    resultEl.className = "success-msg";
+                    resultEl.textContent = "הקובץ הועלה בהצלחה! מזהה: " + data.file_id;
+
+                    // איפוס הטופס אחרי העלאה מוצלחת
+                    document.getElementById("upload-form").reset();
+                    fileNameDisplay.textContent = "";
+                    defaultMsg.style.display = 'block';
+                } else {
+                    resultEl.className = "error-msg";
+                    resultEl.textContent = "שגיאה: " + data.error;
+                }
+            } catch (error) {
+                // טיפול במקרה של נפילת שרת או ניתוק רשת
+                resultEl.className = "error-msg";
+                resultEl.textContent = "שגיאת תקשורת עם השרת.";
+            } finally {
+                // 4. החזרת הכפתור למצב פעיל בכל מקרה (הצלחה או כישלון)
+                submitBtn.disabled = false;
+                submitBtn.textContent = "העלה קובץ לשרת";
             }
         });
     </script>
