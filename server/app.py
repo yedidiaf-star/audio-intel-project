@@ -2,10 +2,10 @@ from flask import Flask, request, jsonify, render_template
 
 from tasks.task_01_login import login_agent
 from tasks.task_02_upload import handle_upload
-from tasks.task_03_cleaning import clean_audio
-from tasks.task_04_enrollment import enroll_speaker
-from tasks.task_06_segmentation import segment_and_identify
-from tasks.task_07_report import build_report
+# from tasks.task_03_cleaning import clean_audio
+# from tasks.task_04_enrollment import enroll_speaker
+# from tasks.task_06_segmentation import segment_and_identify
+# from tasks.task_07_report import build_report
 
 app = Flask(__name__)
 
