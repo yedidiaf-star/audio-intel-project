@@ -5,7 +5,7 @@ import librosa
 import json
 import librosa.feature
 
-DB_PATH = pathlib.Path(file).resolve().parent.parent.parent / "data" / "speaker_profiles.json"
+DB_PATH = pathlib.Path(__file__).resolve().parent.parent.parent / "data" / "speaker_profiles.json"
 
 
 
@@ -42,6 +42,3 @@ def load_speaker_profiles():
         return {}
     except json.JSONDecodeError:
         return {}
-
-
-
