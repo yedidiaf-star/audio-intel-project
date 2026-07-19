@@ -5,7 +5,8 @@ import librosa
 import json
 import librosa.feature
 
-DB_PATH = pathlib.Path("data/speakers_db.json")
+DB_PATH = pathlib.Path(file).resolve().parent.parent.parent / "data" / "speaker_profiles.json"
+
 
 
 def enroll_speaker(speaker_name, file_path):
