@@ -1,0 +1,262 @@
+<!DOCTYPE html> <!-- הגדרת סוג המסמך כ-HTML5 תקני -->
+<html lang="he" dir="rtl"> <!-- תגית השורש של המסמך, מוגדרת בשפה העברית ובכיוון כתיבה מימין לשמאל -->
+<head> <!-- פתיחת החלק הראשי (head) המכיל הגדרות, קידוד ומטא-מידע על הדף -->
+    <meta charset="UTF-8"> <!-- הגדרת קידוד התווים ל-UTF-8 כדי להבטיח תמיכה תקינה בעברית ובתווים מיוחדים -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>העלאת קובץ וולידציה</title> <!-- הגדרת הכותרת שתוצג בלשונית הדפדפן -->
+    <style> <!-- פתיחת תגית להגדרת עיצובים וסגנונות (CSS) פנימיים בדף -->
+        /* איפוס הגדרות ברירת מחדל של הדפדפן */
+        * {
+            box-sizing: border-box;
+        }
+
+        /* עיצוב גוף הדף: הירארכיית פונטים של אפל, פריסת Flexbox להתמרכזות מוחלטת בכל צירי המסך */
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", sans-serif;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center; /* פריסה מרכזית בציר האופקי */
+            align-items: center;     /* פריסה מרכזית בציר האנכי */
+            background-color: #0f172a;
+            /* יצירת רקע מרהיב עם כתמי צבע עמוקים המדמים את הרקעים הדינמיים של macOS */
+            background-image:
+                radial-gradient(at 10% 10%, rgba(0, 113, 227, 0.4) 0px, transparent 50%),
+                radial-gradient(at 90% 90%, rgba(147, 51, 234, 0.4) 0px, transparent 50%),
+                radial-gradient(at 50% 50%, rgba(56, 189, 248, 0.2) 0px, transparent 50%);
+            background-size: cover;
+            background-attachment: fixed;
+            color: #f5f5f7;
+        }
+
+        /* עיצוב התיבה המרכזית (Glassmorphism): זכוכית חלבית מתקדמת עם שקיפות, טשטוש עמוק, ומסגרת זוהרת עדינה */
+        .container {
+            width: 100%;
+            max-width: 480px;
+            padding: 45px 35px;
+            background: rgba(255, 255, 255, 0.08); /* שקיפות עדינה המותאמת למצב כהה אלגנטי */
+            backdrop-filter: blur(40px) saturate(180%);
+            -webkit-backdrop-filter: blur(40px) saturate(180%); /* תמיכה מלאה בדפדפני Safari */
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            border-radius: 32px;
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.3),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            text-align: center; /* יישור כל האלמנטים הפנימיים והטקסט למרכז */
+            transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), box-shadow 0.4s ease;
+        }
+
+        /* אפקט ריחוף עדין המעניק תחושת עומק ותלת-ממד */
+        .container:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 40px 80px rgba(0, 0, 0, 0.4),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+        }
+
+        /* עיצוב הכותרת: משקל פונט אלגנטי ומרווחים נקיים בהשראת מסכי ההגדרות של אפל */
+        h2 {
+            font-size: 26px;
+            font-weight: 700;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #ffffff;
+            letter-spacing: -0.5px;
+        }
+
+        /* תת-כותרת עדינה להנחיית המשתמש */
+        .subtitle {
+            font-size: 14px;
+            color: rgba(255, 255, 255, 0.6);
+            margin-bottom: 30px;
+        }
+
+        /* עיצוב אזור בחירת הקובץ כקופסת Drop-zone מודרנית ומרכזית */
+        .file-drop-area {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 35px 20px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px dashed rgba(255, 255, 255, 0.25);
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 25px;
+        }
+
+        .file-drop-area:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: #0071e3;
+        }
+
+        /* עיצוב שדה הקלט המקורי כך שיכסה את כל אזור הגרירה ויהיה שקוף לגמרי */
+        input[type="file"] {
+            position: absolute;
+            left: 0;
+            top: 0;
+            height: 100%;
+            width: 100%;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+        /* אייקון וטקסט מעוצבים הממוקמים במרכז אזור הגרירה */
+        .file-icon {
+            font-size: 38px;
+            margin-bottom: 12px;
+            color: #38bdf8;
+        }
+
+        .file-msg {
+            font-size: 15px;
+            font-weight: 500;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .file-format {
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.5);
+            margin-top: 6px;
+        }
+
+        /* עיצוב כפתור השליחה: סגנון אפל אופייני (Pill Button), צבע כחול זוהר, הצללה רכה ואפקט לחיצה מתקדם */
+        button[type="submit"] {
+            width: 100%;
+            padding: 16px 28px;
+            background: linear-gradient(180deg, #0077ed 0%, #0060c2 100%);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            border-radius: 980px; /* עיצוב עגול לחלוטין בצורת גלולה */
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: -0.2px;
+            cursor: pointer;
+            box-shadow: 0 8px 20px rgba(0, 113, 227, 0.4),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.2);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        button[type="submit"]:hover {
+            background: linear-gradient(180deg, #0080ff 0%, #006adc 100%);
+            box-shadow: 0 10px 25px rgba(0, 113, 227, 0.5),
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        button[type="submit"]:active {
+            transform: translateY(1px);
+            box-shadow: 0 4px 10px rgba(0, 113, 227, 0.3);
+        }
+
+        /* עיצוב אלמנט ההודעות: מרווח עליון, טיפוגרפיה נקייה ומעבר הדרגתי */
+        #message {
+            margin-top: 25px;
+            font-size: 14px;
+            font-weight: 500;
+            line-height: 1.5;
+            padding: 0;
+            border-radius: 16px;
+            transition: all 0.3s ease;
+            max-height: 0;
+            overflow: hidden;
+            opacity: 0;
+        }
+
+        /* הצגת אלמנט ההודעות כשיש בו תוכן פעיל */
+        #message:not(:empty) {
+            padding: 14px 18px;
+            max-height: 100px;
+            opacity: 1;
+        }
+
+        /* הגדרת מחלקת עיצוב המציגה טקסט בצבע ירוק עבור הודעות הצלחה עם רקע זכוכיתי תואם */
+        .success {
+            color: #34d399;
+            background: rgba(16, 185, 129, 0.15);
+            border: 1px solid rgba(52, 211, 153, 0.3);
+        }
+
+        /* הגדרת מחלקת עיצוב המציגה טקסט בצבע אדום עבור הודעות שגיאה עם רקע זכוכיתי תואם */
+        .error {
+            color: #f87171;
+            background: rgba(239, 68, 68, 0.15);
+            border: 1px solid rgba(248, 113, 113, 0.3);
+        }
+    </style> <!-- סגירת תגית העיצובים -->
+</head> <!-- סגירת החלק הראשי (head) של המסמך -->
+<body> <!-- פתיחת גוף הדף (body) המכיל את התוכן הויזואלי המוצג למשתמש -->
+    <div class="container"> <!-- פתיחת תגית דיב (div) מעוצבת שתכיל את הטופס וההודעות -->
+        <h2>העלאת קובץ שמע לשרת</h2> <!-- כותרת משנה ברמה 2 המוצגת בראש הטופס -->
+        <div class="subtitle">בדיקת תקינות מהירה וקלה בממשק מתקדם</div>
+
+        <form id="uploadForm"> <!-- פתיחת טופס עם מזהה ייחודי לצורך איתורו וניהולו בעזרת JavaScript -->
+            <!-- אזור מותאם אישית ומעוצב לבחירת קובץ או גרירתו (Drag and Drop) -->
+            <div class="file-drop-area">
+                <div class="file-icon">🎵</div>
+                <div class="file-msg" id="fileLabel">לחץ או גרור קובץ שמע לכאן</div>
+                <div class="file-format">תמיכה בקבצי MP3, WAV (עד 50MB)</div>
+                <!-- הגבלת תצוגה לקבצי שמע בלבד בדפדפן -->
+                <input type="file" id="audioInput" name="audio_file" accept=".wav,.mp3" required> <!-- שדה לבחירת קובץ, המוגבל לקבצי WAV ו-MP3 בלבד ומוגדר כשדה חובה -->
+            </div>
+
+            <button type="submit">העלאה ובדיקת תקינות</button> <!-- כפתור שליחה המפעיל את אירוע השליחה (submit) של הטופס -->
+        </form> <!-- סגירת תגית הטופס -->
+        <div id="message"></div> <!-- אלמנט ריק שיוצגו בו הודעות סטטוס (טעינה, הצלחה או שגיאה) המיועדות למשתמש -->
+    </div> <!-- סגירת הדיב המרכזי (container) -->
+
+    <script> <!-- פתיחת תגית סקריפט להרצת קוד JavaScript בצד הלקוח -->
+        // קוד קטן שנוסף כדי לעדכן את הטקסט היפה של אזור הבחירה כשמשתמש בוחר קובץ
+        document.getElementById('audioInput').addEventListener('change', function(e) {
+            const fileName = e.target.files[0] ? e.target.files[0].name : 'לחץ או גרור קובץ שמע לכאן';
+            document.getElementById('fileLabel').textContent = fileName;
+        });
+
+        document.getElementById('uploadForm').addEventListener('submit', async function(event) { // איתור הטופס לפי מזהה והגדרת מאזין לאירוע שליחה המפעיל פונקציה אסינכרונית
+            // 1. מניעת התנהגות ברירת המחדל של טופס - רענון הדף
+            event.preventDefault(); // עצירת רענון הדף האוטומטי המתרחש כברירת מחדל בעת שליחת טופס ב-HTML
+
+            const fileInput = document.getElementById('audioInput'); // שמירת הפניה לאלמנט שדה בחירת הקובץ במשתנה לצורך גישה לקובץ שנבחר
+            const messageDiv = document.getElementById('message'); // שמירת הפניה לאלמנט תצוגת ההודעות במשתנה לצורך עדכון הטקסט והעיצוב שלו
+
+            // איפוס תצוגת ההודעות והצגת חיווי טעינה
+            messageDiv.textContent = 'מעלה ובודק את הקובץ, אנא המתן...'; // עדכון תוכן הטקסט באלמנט ההודעות להודעת המתנה וטעינה
+            messageDiv.className = ''; // איפוס ומחיקת מחלקות עיצוב קודמות (כמו success או error) מאלמנט ההודעות
+
+            // 2. אריזת הקובץ לפורמט multipart/form-data
+            const formData = new FormData(); // יצירת אובייקט FormData חדש המאפשר שליחת מידע וקבצים לשרת בפורמט התואם לטפסים
+            formData.append('audio_file', fileInput.files[0]); // הוספת הקובץ הראשון שנבחר בשדה הקלט אל תוך אובייקט ה-FormData תחת השם 'audio_file'
+
+            try { // פתיחת בלוק try לביצוע פעולות רשת העשויות להיכשל ולכידת שגיאות במידה ויקרו
+                // 3. שליחת הבקשה לשרת ברקע
+                const response = await fetch('/upload', { // שליחת בקשת רשת אסינכרונית לנתיב '/upload' והמתנה לקבלת תשובה מהשרת
+                    method: 'POST', // הגדרת שיטת ה-HTTP של הבקשה כ-POST, המתאימה לשליחת נתונים והעלאת קבצים
+                    body: formData // הגדרת אובייקט ה-FormData (המכיל את קובץ השמע) כגוף (body) של הבקשה שנשלחת
+                }); // סגירת אובייקט ההגדרות וסיום קריאת ה-fetch
+
+                // במקרה של שגיאה 413 (הקובץ מעל 50MB), ייתכן שאין תשובת JSON
+                if (response.status === 413) { // בדיקה האם קוד הסטטוס שחזר מהשרת הוא 413 (המציין שהמידע שנשלח גדול מדי)
+                    throw new Error("הקובץ גדול מדי! הגודל המקסימלי הוא 50MB."); // יצירת וזריקת שגיאה מותאמת אישית שתעביר את הריצה ישירות לבלוק ה-catch
+                } // סגירת תנאי ה-if לבדיקת שגיאת גודל הקובץ
+
+                // 4. פענוח תשובת ה-JSON מהשרת
+                const result = await response.json(); // המתנה לפענוח גוף התשובה שהתקבל מהשרת מפורמט JSON והמרתו לאובייקט JavaScript
+
+                // 5. הצגת פלט בהתאם להצלחה או לכישלון
+                if (response.ok && result.success) { // בדיקה האם בקשת ה-HTTP הצליחה (סטטוס 200-299) וגם המאפיין success בתשובת השרת הוא אמת (true)
+                    messageDiv.textContent = `הקובץ תקין והועלה בהצלחה! מזהה קובץ: ${result.file_id}`; // הצגת הודעת הצלחה למשתמש המשלבת את מזהה הקובץ שהתקבל מהשרת
+                    messageDiv.className = 'success'; // הוספת מחלקת העיצוב 'success' לאלמנט ההודעות כדי שהטקסט יוצג בצבע ירוק
+                } else { // ביצוע הבלוק הבא במידה וההעלאה נכשלה או שהשרת החזיר שגיאת וולידציה
+                    messageDiv.textContent = `שגיאה: ${result.error}`; // הצגת הודעת השגיאה הספציפית שהתקבלה מהשרת בתוך אלמנט ההודעות
+                    messageDiv.className = 'error'; // הוספת מחלקת העיצוב 'error' לאלמנט ההודעות כדי שהטקסט יוצג בצבע אדום
+                } // סגירת תנאי ה-if-else המטפל בתוצאת תשובת השרת
+            } catch (error) { // לכידת שגיאות שהתרחשו במהלך הביצוע בבלוק ה-try (כגון שגיאות רשת, נפילת שרת או שגיאה שנזרקה יזומת)
+                // טיפול בשגיאות תקשורת או שגיאות גודל חריג
+                messageDiv.textContent = error.message || 'אירעה שגיאת תקשורת מול השרת.'; // הצגת הודעת השגיאה שנלכדה, או הודעת ברירת מחדל אם אין הודעה מוגדרת
+                messageDiv.className = 'error'; // הוספת מחלקת העיצוב 'error' להצגת השגיאה בצבע אדום
+            } // סגירת בלוק ה-catch
+        }); // סגירת הגדרת פונקציית המאזין וסגירת קריאת ה-addEventListener
+    </script> <!-- סגירת תגית ה-script וסיום קוד ה-JavaScript -->
+</body> <!-- סגירת גוף המסמך (body) -->
+</html> <!-- סגירת תגית ה-html וסיום המסמך כולו -->
