@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+env/
+*.egg-info/
+
+# Env / secrets
+.env
+*.key
+
+# Audio data (large / private — don't commit real recordings)
+data/uploads/
+data/raw/
+*.wav
+*.mp3
+!data/samples/*.wav
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Logs
+*.log

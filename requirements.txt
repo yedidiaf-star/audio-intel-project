@@ -1,0 +1,34 @@
+# Install: pip install -r requirements.txt
+
+# Base server (all tasks)
+flask
+
+# Task 01 - login
+bcrypt
+
+# Task 02-03 - upload and cleaning
+pydub
+numpy
+
+# Task 04-06 - speaker enrollment and identification
+librosa
+resemblyzer
+scikit-learn
+
+# Task 07 - report
+# (no extra dependency needed for HTML; fpdf2 only if generating PDF)
+fpdf2
+
+# Task 08 - noise reduction (bonus)
+noisereduce
+
+# Task 09 - transcription (bonus)
+openai-whisper
+torch
+
+# Task 10 - timeline visualization (bonus)
+matplotlib
+
+# Task 11 - local LLM summary (bonus)
+# Ollama itself is installed separately (not via pip) - see https://ollama.com
+requests
